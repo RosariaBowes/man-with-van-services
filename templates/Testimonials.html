@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Customer Reviews</title>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='Styling.css') }}">
+</head>
+
+<body>
+
+<section class="reviews" id="reviews">
+
+  <h2>Customer Reviews</h2>
+
+  <div class="review-cards">
+
+    {% for review in reviews %}
+      <div class="review-card">
+        <p>
+          {% for i in range(review.rating) %}
+            ⭐
+          {% endfor %}
+        </p>
+
+        <p>"{{ review.review_text }}"</p>
+
+        <h3>{{ review.name }}</h3>
+      </div>
+    {% else %}
+      <div class="review-card">
+        <p>No approved reviews yet.</p>
+        <h3>Reviews coming soon</h3>
+      </div>
+    {% endfor %}
+
+  </div>
+
+  <form class="review-form" method="POST" action="/add-review">
+
+    <div class="review-row">
+      <div class="field">
+        <label>Your name <span class="req">*</span></label>
+        <input type="text" name="review_name" required>
+      </div>
+
+      <div class="field">
+        <label>Rating <span class="req">*</span></label>
+        <select name="review_rating" required>
+          <option value="5">5 / 5</option>
+          <option value="4">4 / 5</option>
+          <option value="3">3 / 5</option>
+          <option value="2">2 / 5</option>
+          <option value="1">1 / 5</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Review <span class="req">*</span></label>
+      <textarea name="review_text" rows="4" required></textarea>
+    </div>
+
+    <button class="button" type="submit">Post review</button>
+
+  </form>
+
+</section>
+
+</body>
+</html>

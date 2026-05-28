@@ -1,0 +1,278 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Man with Van Services South Wales</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='Styling.css') }}">
+</head>
+
+<body>
+
+  <!-- NAVIGATION -->
+  <nav class="topnav">
+
+    <div class="brand">
+      <i class="fa fa-truck"></i>
+      <span>Man with Van Services South Wales</span>
+    </div>
+
+    <div class="nav-links">
+      <a href="#about">About</a>
+      <a href="#services">Services</a>
+      <a href="#reviews">Reviews</a>
+      <a href="#contact">Contact</a>
+    </div>
+
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+
+    <img src="{{ url_for('static', filename='VanCastle.jpg') }}"
+         class="hero-image"
+         alt="Man with Van">
+
+    <div class="hero-box">
+      <h1>Man with Van Services South Wales</h1>
+
+      <p>
+        Reliable, friendly and professional moving services based in South Wales.
+      </p>
+
+      <a href="#contact" class="button">Get In Touch</a>
+    </div>
+
+  </section>
+
+  <!-- ABOUT -->
+  <section class="about" id="about">
+
+    <div class="about-logo">
+      <img src="{{ url_for('static', filename='Van.jpg') }}" alt="Logo">
+    </div>
+
+    <div class="about-text">
+
+      <h2>About Us</h2>
+
+      <p>
+        We provide dependable man with van services for house moves,
+        furniture transport, and deliveries across South Wales.
+      </p>
+
+      <p>
+        We offer removal, collection and delivery services throughout South Wales
+        and further afield. We also provide house clearance, office relocation,
+        gardening, painting, flat pack assembly and storage facilities.
+      </p>
+
+      <h2>Our Vision</h2>
+
+      <p>
+        We focus on quality finishes, reliability,
+        and excellent customer service.
+      </p>
+
+    </div>
+
+    <!-- GOOGLE MAP -->
+    <div class="map-box">
+
+      <iframe
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d19867.583562069027!2d-3.143025967147556!3d51.50499744598556!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x486e1d04cf984f53%3A0x8a9d7461ee7eb52f!2sRumney!5e0!3m2!1sen!2suk!4v1779616250011!5m2!1sen!2suk"
+        width="100%"
+        height="400"
+        style="border:0;"
+        allowfullscreen=""
+        loading="lazy">
+      </iframe>
+
+    </div>
+
+  </section>
+
+  <!-- SERVICES -->
+  <section class="services" id="services">
+
+    <h2>Our Services</h2>
+
+    <div class="cards">
+
+      <div class="card">
+        <h3>Removals</h3>
+        <p>Careful and reliable moving support for homes and flats.</p>
+      </div>
+
+      <div class="card">
+        <h3>Collections</h3>
+        <p>Perfect for furniture, appliances and bulky items.</p>
+      </div>
+
+      <div class="card">
+        <h3>Deliveries</h3>
+        <p>Affordable moving help for students across South Wales.</p>
+      </div>
+
+    </div>
+
+    <!-- CAROUSEL -->
+    <div class="gallery">
+
+      <div class="mySlides fade">
+        <img src="{{ url_for('static', filename='Loading.jpg') }}">
+      </div>
+
+      <div class="mySlides fade">
+        <img src="{{ url_for('static', filename='House.jpg') }}">
+      </div>
+
+      <div class="mySlides fade">
+        <img src="{{ url_for('static', filename='KeyHome.jpg') }}">
+      </div>
+
+      <div class="mySlides fade">
+        <img src="{{ url_for('static', filename='Snow.jpg') }}">
+      </div>
+
+      <div class="mySlides fade">
+        <img src="{{ url_for('static', filename='KeyHome2.jpg') }}">
+      </div>
+
+      <button class="prev" onclick="plusSlides(-1)">&#10094;</button>
+      <button class="next" onclick="plusSlides(1)">&#10095;</button>
+
+    </div>
+
+  </section>
+
+  <!-- REVIEWS -->
+  <section class="reviews" id="reviews">
+
+    <h2>Customer Reviews</h2>
+
+    <div class="review-cards">
+
+      {% for review in reviews %}
+      <div class="review-card">
+
+        <p>
+          {% for i in range(review.rating) %}
+            ⭐
+          {% endfor %}
+        </p>
+
+        <p>"{{ review.review_text }}"</p>
+
+        <h3>{{ review.name }}</h3>
+
+      </div>
+      {% endfor %}
+
+    </div>
+
+    <!-- REVIEW FORM -->
+    <form class="review-form" method="POST" action="/add-review">
+
+      <div class="review-row">
+
+        <div class="field">
+          <label>Your name <span class="req">*</span></label>
+          <input type="text" name="review_name" required>
+        </div>
+
+        <div class="field">
+          <label>Rating <span class="req">*</span></label>
+
+          <select name="review_rating" required>
+            <option value="5">5 / 5</option>
+            <option value="4">4 / 5</option>
+            <option value="3">3 / 5</option>
+            <option value="2">2 / 5</option>
+            <option value="1">1 / 5</option>
+          </select>
+
+        </div>
+
+      </div>
+
+      <div class="field">
+        <label>Review <span class="req">*</span></label>
+        <textarea name="review_text" rows="4" required></textarea>
+      </div>
+
+      <button class="button" type="submit">
+        Post review
+      </button>
+
+    </form>
+
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact" id="contact">
+
+    <h2>Contact Us</h2>
+
+    <div class="contact-container">
+
+      <div class="contact-logo">
+        <img src="{{ url_for('static', filename='Van.jpg') }}" alt="Logo">
+      </div>
+
+      <div class="contact-info">
+
+        <p>
+          <i class="fa fa-envelope"></i>
+          mrj330@hotmail.co.uk
+        </p>
+
+        <p>
+          <i class="fa fa-phone"></i>
+          07429477061
+        </p>
+
+        <p>
+          <i class="fa fa-map-marker"></i>
+          Rumney, Cardiff
+        </p>
+
+        <p class="facebook-link">
+          <i class="fa fa-facebook"></i>
+
+          <a href="https://www.facebook.com/groups/1411527092485797/" target="_blank">
+            Visit our Facebook page
+          </a>
+        </p>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- FOOTER -->
+  <footer id="footer">
+
+    <p>
+      © 2026 Man with Van Services South Wales - Created by Rosaria Bowes
+    </p>
+
+  </footer>
+
+  <script src="{{ url_for('static', filename='Script.js') }}"></script>
+
+</body>
+</html>
+
