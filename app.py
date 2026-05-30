@@ -136,5 +136,9 @@ def testimonials():
 
     return render_template("Testimonials.html", reviews=reviews)
 
+@app.route("/google9710b3f238d55b7a.html")
+def google_verification():
+    return app.send_static_file("google9710b3f238d55b7a.html")
+
 if __name__ == "__main__":
     app.run(debug=True)
