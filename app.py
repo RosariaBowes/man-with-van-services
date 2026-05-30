@@ -1,7 +1,13 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session
+from dotenv import load_dotenv
+import os
 import sqlite3
+load_dotenv()
 
 app = Flask(__name__)
+
+app.secret_key = os.environ.get("SECRET_KEY")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD")
 
 DATABASE = "reviews.db"
 
@@ -57,9 +63,31 @@ def add_review():
 
     return redirect(url_for("home"))
 
+@app.route("/admin/login", methods=["GET", "POST"])
+def admin_login():
+    if request.method == "POST":
+        password = request.form["password"]
+
+        if password == ADMIN_PASSWORD:
+            session["admin_logged_in"] = True
+            return redirect(url_for("admin_reviews"))
+
+        return render_template("admin_login.html", error="Incorrect password")
+
+    return render_template("admin_login.html")
+
+
+@app.route("/admin/logout")
+def admin_logout():
+    session.pop("admin_logged_in", None)
+    return redirect(url_for("home"))
+
 
 @app.route("/admin/reviews")
 def admin_reviews():
+    if not session.get("admin_logged_in"):
+        return redirect(url_for("admin_login"))
+
     conn = get_db()
     reviews = conn.execute("""
         SELECT * FROM reviews
@@ -72,6 +100,9 @@ def admin_reviews():
 
 @app.route("/approve-review/<int:id>", methods=["POST"])
 def approve_review(id):
+    if not session.get("admin_logged_in"):
+        return redirect(url_for("admin_login"))
+
     conn = get_db()
     conn.execute("UPDATE reviews SET approved = 1 WHERE id = ?", (id,))
     conn.commit()
@@ -82,13 +113,15 @@ def approve_review(id):
 
 @app.route("/delete-review/<int:id>", methods=["POST"])
 def delete_review(id):
+    if not session.get("admin_logged_in"):
+        return redirect(url_for("admin_login"))
+
     conn = get_db()
     conn.execute("DELETE FROM reviews WHERE id = ?", (id,))
     conn.commit()
     conn.close()
 
     return redirect(url_for("admin_reviews"))
-
 @app.route("/testimonials")
 def testimonials():
     conn = get_db()

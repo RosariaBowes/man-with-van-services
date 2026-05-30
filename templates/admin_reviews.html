@@ -12,6 +12,8 @@
 
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
 
+  <link rel="stylesheet" href="{{ url_for('static', filename='Styling.css') }}">
+
   <style>
 
     body {
@@ -132,7 +134,13 @@
 
 <body>
 
-  <h1>Review Admin</h1>
+  <div class="admin-header">
+    <h1>Review Admin</h1>
+
+    <a href="{{ url_for('admin_logout') }}" class="logout-btn">
+      Logout
+    </a>
+  </div>
 
   <div class="review-cards">
 

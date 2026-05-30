@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Login</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='Styling.css') }}">
+</head>
+
+<body>
+
+  <section class="reviews">
+    <h2>Admin Login</h2>
+
+    <form class="review-form" method="POST">
+      <div class="field">
+        <label>Password</label>
+        <input type="password" name="password" required>
+      </div>
+
+      {% if error %}
+        <p style="color:red; margin-bottom:20px;">{{ error }}</p>
+      {% endif %}
+
+      <button class="button" type="submit">Login</button>
+    </form>
+  </section>
+
+</body>
+</html>
