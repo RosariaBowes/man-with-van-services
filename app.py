@@ -144,5 +144,9 @@ def google_verification():
 def sitemap():
     return app.send_static_file("sitemap.xml")
 
+@app.route("/robots.txt")
+def robots():
+    return app.send_static_file("robots.txt")
+
 if __name__ == "__main__":
     app.run(debug=True)

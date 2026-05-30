@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://manwithvansouthwales.co.uk/sitemap.xml
