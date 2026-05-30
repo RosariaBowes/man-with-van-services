@@ -33,7 +33,7 @@ def create_table():
     conn.commit()
     conn.close()
 
-    create_table()
+create_table()
 
 
 @app.route("/")
