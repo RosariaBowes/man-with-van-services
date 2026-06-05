@@ -1,37 +1,42 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from dotenv import load_dotenv
 import os
-import sqlite3
+import psycopg2
+import psycopg2.extras
+
 load_dotenv()
 
 app = Flask(__name__)
 
 app.secret_key = os.environ.get("SECRET_KEY")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD")
-
-DATABASE = "reviews.db"
+DATABASE_URL = os.environ.get("DATABASE_URL")
 
 
 def get_db():
-    conn = sqlite3.connect(DATABASE)
-    conn.row_factory = sqlite3.Row
-    return conn
+    return psycopg2.connect(
+        DATABASE_URL,
+        cursor_factory=psycopg2.extras.RealDictCursor
+    )
 
 
 def create_table():
     conn = get_db()
-    conn.execute("""
+    cur = conn.cursor()
+    cur.execute("""
         CREATE TABLE IF NOT EXISTS reviews (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             name TEXT NOT NULL,
             rating INTEGER NOT NULL,
             review_text TEXT NOT NULL,
-            approved INTEGER DEFAULT 0,
+            approved BOOLEAN DEFAULT FALSE,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
     conn.commit()
+    cur.close()
     conn.close()
+
 
 create_table()
 
@@ -39,11 +44,14 @@ create_table()
 @app.route("/")
 def home():
     conn = get_db()
-    reviews = conn.execute("""
+    cur = conn.cursor()
+    cur.execute("""
         SELECT * FROM reviews
-        WHERE approved = 1
+        WHERE approved = TRUE
         ORDER BY created_at DESC
-    """).fetchall()
+    """)
+    reviews = cur.fetchall()
+    cur.close()
     conn.close()
 
     return render_template("Home.html", reviews=reviews)
@@ -56,14 +64,17 @@ def add_review():
     review_text = request.form["review_text"]
 
     conn = get_db()
-    conn.execute("""
+    cur = conn.cursor()
+    cur.execute("""
         INSERT INTO reviews (name, rating, review_text)
-        VALUES (?, ?, ?)
+        VALUES (%s, %s, %s)
     """, (name, rating, review_text))
     conn.commit()
+    cur.close()
     conn.close()
 
     return redirect(url_for("home"))
+
 
 @app.route("/admin/login", methods=["GET", "POST"])
 def admin_login():
@@ -91,10 +102,13 @@ def admin_reviews():
         return redirect(url_for("admin_login"))
 
     conn = get_db()
-    reviews = conn.execute("""
+    cur = conn.cursor()
+    cur.execute("""
         SELECT * FROM reviews
         ORDER BY created_at DESC
-    """).fetchall()
+    """)
+    reviews = cur.fetchall()
+    cur.close()
     conn.close()
 
     return render_template("admin_reviews.html", reviews=reviews)
@@ -106,8 +120,10 @@ def approve_review(id):
         return redirect(url_for("admin_login"))
 
     conn = get_db()
-    conn.execute("UPDATE reviews SET approved = 1 WHERE id = ?", (id,))
+    cur = conn.cursor()
+    cur.execute("UPDATE reviews SET approved = TRUE WHERE id = %s", (id,))
     conn.commit()
+    cur.close()
     conn.close()
 
     return redirect(url_for("admin_reviews"))
@@ -119,34 +135,45 @@ def delete_review(id):
         return redirect(url_for("admin_login"))
 
     conn = get_db()
-    conn.execute("DELETE FROM reviews WHERE id = ?", (id,))
+    cur = conn.cursor()
+    cur.execute("DELETE FROM reviews WHERE id = %s", (id,))
     conn.commit()
+    cur.close()
     conn.close()
 
     return redirect(url_for("admin_reviews"))
+
+
 @app.route("/testimonials")
 def testimonials():
     conn = get_db()
-    reviews = conn.execute("""
+    cur = conn.cursor()
+    cur.execute("""
         SELECT * FROM reviews
-        WHERE approved = 1
+        WHERE approved = TRUE
         ORDER BY created_at DESC
-    """).fetchall()
+    """)
+    reviews = cur.fetchall()
+    cur.close()
     conn.close()
 
     return render_template("Testimonials.html", reviews=reviews)
+
 
 @app.route("/google9710b3f238d55b7a.html")
 def google_verification():
     return app.send_static_file("google9710b3f238d55b7a.html")
 
+
 @app.route("/sitemap.xml")
 def sitemap():
     return app.send_static_file("sitemap.xml")
 
+
 @app.route("/robots.txt")
 def robots():
     return app.send_static_file("robots.txt")
+
 
 if __name__ == "__main__":
     app.run(debug=True)
